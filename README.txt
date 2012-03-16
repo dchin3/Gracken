@@ -1,4 +1,4 @@
-Previous Developers: Paul Yi
+Previous Developer: Paul Yi
 Current Developers: Douglas B. Chin, Lin Yuan Wang, Aaron Shipper
 
 This project is done using Python 2.7 with PyGTK+ 2.24.
