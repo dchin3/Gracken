@@ -9,23 +9,35 @@ from Grackenconfig import *
 #from lib.Grackenlib import *
 import time
 
+import random 
 #global variables
 
 #these variables are imported from Grakenconfig
 #numtrials # number of trials images shown
-#numOfBlocks  #number of blocks
+#numOfBlocks  #number of loops through image
 #blockMode# True or False if block method is used
 #numOfImageOption # only works for 1 or 2
-learningnum = 1 # counter for current learning questions given
+#percent     #percentage of correct answers to pass
+g_learningnum = 1 # counter for current learning questions given
 g_trialNumber = 1 # counter for current trial number in phase
-rannum = 0
-iarray = []
-imgA = []
-imgB = []
-completeImageList = [] #only used when one image option is enabled
-oneImageAnswer = 'A' #only used when one image option is enabled
-learningCorrect = 0
+g_rannum = 0
+g_iarray = []
 
+g_completeImageList = [] #only used when one image option is enabled
+g_oneImageAnswer = 'A' #only used when one image option is enabled
+g_numCorrectAnswers = 0
+g_totalQuestionsAsk = numOfBlocks * numImageSets
+g_passedPercentRatio = False
+g_listA = []
+g_listB = []
+g_usedLst = []
+
+
+# list of configurable options
+g_bUseBlocks = False
+g_bDisplayAnswerMode = False
+g_bLearningMode = AnswerOnOff
+g_bTestingMode = False
 
 class Gracken:
 
@@ -47,6 +59,27 @@ class Gracken:
         self.window.connect("destroy", self.destroy)
         #creates separator or the line within the window
         self.separator = gtk.HSeparator()
+
+    def randomLst(self):
+        tempLst = []
+        for i in range(1,numImageSets):
+            tempLst.append(i)
+
+        notIn = False
+        half = numImageSets/2
+        for i in range(1, half):
+            element = random.choice(tempLst)
+            g_listA.append(element)
+            g_usedLst.append(element)
+        for i in range(1,half):
+            element2 = random.choice(tempLst)
+            for j in range(1, half):
+                if element2 not in g_listA:
+                    notIn = True
+                elif element2 in g_listA:
+                    notIn = False
+        if(notIn == True):        
+            g_listB.append(element2)
 
     # Set up single picture in GUI
     def setupPictureFrames (self):
@@ -129,6 +162,20 @@ class Gracken:
         self.hboxbuttons.add(self.buttonA)          #puts button on box
         self.hboxbuttons.add(self.buttonB)
 
+    #the ratio calculation of correct answers
+    def percentRatio(self):
+
+        global g_numCorrectAnswers
+        global g_totalQuestionsAsk
+        temp = g_numCorrectAnswers/g_totalQuestionsAsk
+        percentTemp = percent /100
+        if temp >= percent:
+            g_passedPercentRatio = True
+            
+        elif temp < percent/100:
+            g_passedPercentRatio = False
+    
+
     # Set up
     def setupWelcome(self):
         self.contBox = gtk.HBox(True, 0)
@@ -175,7 +222,7 @@ class Gracken:
     # Choose to do learning phase, testing 1 or 2
     def choicePhase(self):
         global numOfImageOption
-        if (learning == True):
+        if (AnswerOnOff == True):
             self.learningPhase()
         else:
             print numOfImageOption
@@ -188,17 +235,17 @@ class Gracken:
         
     def endTrialLearning(self):
         global numtrials
-        global learningnum
-        global learningCorrect
+        global g_learningnum
+        global g_numCorrectAnswers
         if (configLearningOption == "trials") :
-            learningnum += 1
-            if learningnum > numtrials:
+            g_learningnum += 1
+            if g_learningnum > numtrials:
                 self.endallLearning()
             else:
                 self.doTrialLearning()
         if (configLearningOption == "ratio"):
-            if learningnum > 2:
-                if ((Fraction(learningCorrect,learningnum)) > configLearningRatio):
+            if g_learningnum > 2:
+                if ((Fraction(g_numCorrectAnswers,g_learningnum)) > configLearningRatio):
                     self.endallLearning()
                 else:
                     self.doTrialLearning()
@@ -227,42 +274,42 @@ class Gracken:
         self.window.show_all()
 
     def doTrialLearning(self):
-        global rannum
-        global completeImageList
-        global oneImageAnswer
+        global g_rannum
+        global g_completeImageList
+        global g_oneImageAnswer
         global numOfImageOption
         if (numOfImageOption == 2):
-            rannum = randint(0, numImageSets)
-            temp1 = "images/%s" %imgA[rannum]
+            g_rannum = randint(0, numImageSets)
+            temp1 = "images/%s" %g_imgA[g_rannum]
             print temp1
-            temp2 = "images/%s" %imgB[rannum]
+            temp2 = "images/%s" %g_imgB[g_rannum]
             print temp2
             self.setImageTrialLearning(temp1,temp2)
         if (numOfImageOption == 1):
-            rannum = randint(0, len(completeImageList)-1)
-            temp1 = "images/%s" %completeImageList[rannum]
+            g_rannum = randint(0, len(g_completeImageList)-1)
+            temp1 = "images/%s" %g_completeImageList[g_rannum]
             print temp1
             self.image1.set_from_file(temp1)
-            oneImageAnswer = completeImageList[rannum]
-            oneImageAnswer = oneImageAnswer[0]
+            g_oneImageAnswer = g_completeImageList[g_rannum]
+            g_oneImageAnswer = g_oneImageAnswer[0]
             self.image1.show()
             self.window.show_all()
 
     def setupImages(self):
         #sets up the images by randomly generating an image that wasn't used yet
-        global imgA
-        global imgB
-        global completeImageList
+        global g_imgA
+        global g_imgB
+        global g_completeImageList
         global numOfImageOption
-        iarray = self.load_all_images("images/")
+        g_iarray = self.load_all_images("images/")
         if(numOfImageOption == 2):
-            imgA = self.sort_array(iarray,'A')
-            imgB = self.sort_array(iarray,'B')
+            g_imgA = self.sort_array(g_iarray,'A')
+            g_imgB = self.sort_array(g_iarray,'B')
         if(numOfImageOption == 1):
-            completeImageList = self.sort_array(iarray,'A')
-            imgB = self.sort_array(iarray,'B')
-            completeImageList.extend(imgB)
-            print completeImageList
+            g_completeImageList = self.sort_array(g_iarray,'A')
+            g_imgB = self.sort_array(g_iarray,'B')
+            g_completeImageList.extend(g_imgB)
+            print g_completeImageList
     
     def delete_event(self, widget, event, data=None):
         # If you return FALSE in the "delete_event" signal handler,
@@ -287,16 +334,16 @@ class Gracken:
     
     def choseA(self, widget, data):
         global g_trialNumber
-        global rannum
+        global g_rannum
         global numOfImageOption
-        global learningCorrect
+        global g_numCorrectAnswers
         print "A was chosen"
         if (numOfImageOption == 2):
-            if correctanswer[rannum] == 1:
+            if correctanswer[g_rannum] == 1:
                 print "Correct answer chosen"
                 self.datafile.write("trial number: " + str(g_trialNumber) + ", A chosen, correct\n")
-                if(learning == True):
-                    learningCorrect+=1
+                if(AnswerOnOff == True):
+                    g_numCorrectAnswers+=1
                     self.window.remove(self.overallbox)
                     self.window.add(self.correctbox)
                     self.window.show_all()
@@ -309,7 +356,7 @@ class Gracken:
             else:
                 print "Incorrect answer chosen"
                 self.datafile.write("trial number: " + str(g_trialNumber) + ", A chosen, incorrect\n")
-                if(learning==True):
+                if(AnswerOnOff==True):
                     self.window.remove(self.overallbox)
                     self.window.add(self.incorrectbox)
                     self.window.show_all()
@@ -321,17 +368,17 @@ class Gracken:
                     self.window.show_all() 
 
             if blockMode == False:
-                if learning == True:
+                if AnswerOnOff == True:
                     self.endTrialLearning()
                 self.endTrial()
             else:
                 self.doTrialOne()
         if (numOfImageOption == 1):
-            if oneImageAnswer == 'A':
+            if g_oneImageAnswer == 'A':
                 print "Correct answer chosen"
                 self.datafile.write("trial number: " + str(g_trialNumber) + ", A chosen, correct\n")
-                if learning == True:
-                    learningCorrect += 1
+                if AnswerOnOff == True:
+                    g_numCorrectAnswers += 1
                     self.window.remove(self.overallbox)
                     self.window.add(self.correctbox)
                     self.window.show_all()
@@ -344,7 +391,7 @@ class Gracken:
             else:
                 print "Incorrect answer chosen"
                 self.datafile.write("trial number: " + str(g_trialNumber) + ", A chosen, incorrect\n")
-                if learning == True:
+                if AnswerOnOff == True:
                     self.window.remove(self.overallbox)
                     self.window.add(self.incorrectbox)
                     self.window.show_all()
@@ -355,24 +402,25 @@ class Gracken:
                     self.window.add(self.overallbox)
                     self.window.show_all()   
             if blockMode == False :
-                if learning == True:
+                if AnswerOnOff == True:
                     self.endTrialLearning()
+                    self.percentRatio()
                 self.endTrial()
             else:
                 self.doTrialOne()
     
     def choseB(self, widget, data):
         global g_trialNumber
-        global rannum
+        global g_rannum
         global numOfImageOption
-        global learningCorrect
+        global g_numCorrectAnswers
         print "B was chosen"
         if (numOfImageOption == 2):
-            if correctanswer[rannum] == 2:
+            if correctanswer[g_rannum] == 2:
                 print "correct answer chosen"
                 self.datafile.write("trial number: " + str(g_trialNumber) + ", B chosen, correct\n")
-                if learning == True:
-                    learningCorrect += 1
+                if AnswerOnOff == True:
+                    g_numCorrectAnswers += 1
                     self.window.remove(self.overallbox)
                     self.window.add(self.correctbox)
                     self.window.show_all()
@@ -385,7 +433,7 @@ class Gracken:
             else:
                 print "incorrect answer chosen"
                 self.datafile.write("trial number: " + str(g_trialNumber) + ", B chosen, incorrect\n")
-                if learning == True:
+                if AnswerOnOff == True:
                     self.window.remove(self.overallbox)
                     self.window.add(self.incorrectbox)
                     self.window.show_all()
@@ -396,17 +444,17 @@ class Gracken:
                     self.window.add(self.overallbox)
                     self.window.show_all()
             if blockMode == False:
-                if learning == True:
+                if AnswerOnOff == True:
                     self.endTrialLearning()
                 self.endTrial()
             else:
                 self.doTrialOne()
         if (numOfImageOption == 1):
-            if oneImageAnswer == 'B':
+            if g_oneImageAnswer == 'B':
                 print "correct answer chosen"
                 self.datafile.write("trial number: " + str(g_trialNumber) + ", B chosen, correct\n")
-                if learning == True:
-                    learningCorrect += 1
+                if AnswerOnOff == True:
+                    g_numCorrectAnswers += 1
                     self.window.remove(self.overallbox)
                     self.window.add(self.correctbox)
                     self.window.show_all()
@@ -429,7 +477,8 @@ class Gracken:
                 self.window.add(self.overallbox)
                 self.window.show_all()
             if blockMode == False :
-                if learning == True:
+                if AnswerOnOff == True:
+                    self.percentRatio()
                     self.endTrialLearning()
                 self.endTrial()
             else:
@@ -447,7 +496,7 @@ class Gracken:
     
     def setupQuestions(self, numberOfImg, number, mode): #number is how many questions or blocks
         # mode is whether is its questions or blocks// blocks or questions should be placed
-        global completeImageList
+        global g_completeImageList
         global numtrials
         global blockMode
         global numOfImageOption
@@ -468,34 +517,34 @@ class Gracken:
         
     def doTrialTwo(self): #do trial when two images are involved
         print "doing trial"
-        global rannum
-        global completeImageList
-        global oneImageAnswer
-        rannum = randint(0, numImageSets-1)
-        temp1 = "images/%s" %imgA[rannum]
+        global g_rannum
+        global g_completeImageList
+        global g_oneImageAnswer
+        g_rannum = randint(0, numImageSets-1)
+        temp1 = "images/%s" %g_imgA[g_rannum]
         print temp1
-        temp2 = "images/%s" %imgB[rannum]
+        temp2 = "images/%s" %g_imgB[g_rannum]
         print temp2
         self.setImageTrialTwo(self,temp1,temp2)
 
     # Trial for one image
     def doTrialOne(self): #shows questions for 1 image experiments
         global g_trialNumber # g_trialNumber dependent on number of available images, in this case 11
-        global rannum
-        global completeImageList
-        global oneImageAnswer
+        global g_rannum
+        global g_completeImageList
+        global g_oneImageAnswer
         print "One image trial", g_trialNumber
         g_trialNumber += 1
         
-        if len(completeImageList) > 0:
-                rannum = randint(0, len(completeImageList)-1)
-                temp1 = "images/%s" %completeImageList[rannum]
+        if len(g_completeImageList) > 0:
+                g_rannum = randint(0, len(g_completeImageList)-1)
+                temp1 = "images/%s" %g_completeImageList[g_rannum]
                 print temp1
                 self.image1.set_from_file(temp1)
                 self.image1.show()
-                oneImageAnswer = completeImageList[rannum]
-                oneImageAnswer = oneImageAnswer[0]
-                completeImageList.remove(completeImageList[rannum])
+                g_oneImageAnswer = g_completeImageList[g_rannum]
+                g_oneImageAnswer = g_oneImageAnswer[0]
+                g_completeImageList.remove(g_completeImageList[g_rannum])
                 self.window.show_all()
         else:
                 g_trialNumber = 1 # reset g_trialNumber to 1
@@ -507,7 +556,7 @@ class Gracken:
         numOfBlocks -= 1
         if numOfBlocks > 0:
             self.setupImages()
-            self.doTrialOne() # Doug: Hard-coded to always do trial one?
+            self.doTrialOne()
         else:
             self.endall()
     
@@ -531,7 +580,7 @@ class Gracken:
         self.welcomeBox.remove(self.valBox)
         self.contButton.set_label("Exit")
         self.contButton.disconnect(self.continueSignal)
-        self.contButton.connect("clicked", self.destroy, "contButton")
+        self.contButton.connect("clicked", self.destroy, "Exit")
         
         self.window.remove(self.overallbox)
         self.endbox = gtk.VBox(False, 0)
@@ -564,15 +613,6 @@ class Gracken:
         self.overallbox.pack_start(self.separator, False, True, 30)
         self.overallbox.pack_start(self.hboxbuttons, False, False, 0)
         
-        #shows the window and others...
-        #self.buttonA.show()
-        #self.buttonB.show()
-        #self.image1.show()
-        #self.image2.show()
-        #self.hbox1.show()
-        #self.hboximg.show()
-        #self.overallbox.show()
-        
         self.window.show()
 
     def main(self):
@@ -581,7 +621,6 @@ class Gracken:
         gtk.main()
         print "After main: now closing"
 
-    #def runExp(self):
         
 print __name__
 if __name__ == "__main__":
