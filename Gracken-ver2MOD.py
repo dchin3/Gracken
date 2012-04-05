@@ -10,6 +10,18 @@ from Grackenconfig import *
 import time
 
 import random 
+
+#TODO THIS IS NOT THE FINAL PLACE FOR THIS
+# just putting this function here so I don't forget what I (it does exactly what I want it to)
+# import Grackenconfig
+# from Grackenconfig import function_list -> this is the list of function names as strings in the config file
+# def parseConfigFile():
+#     list1 = functionlist
+#     for name in list1:
+#           function = getattr(Grackenconfig, name)
+#           function() -> runs the function (so can use parameters)
+
+
 #global variables
 
 #these variables are imported from Grakenconfig
@@ -38,6 +50,7 @@ g_bUseBlocks = False
 g_bDisplayAnswerMode = False
 g_bLearningMode = AnswerOnOff
 g_bTestingMode = False
+
 
 class Gracken:
 
