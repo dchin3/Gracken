@@ -1,0 +1,4 @@
+# Files to ignore
+
+# Ignore images (don't have to worry about commiting them')
+images/
