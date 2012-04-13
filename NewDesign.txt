@@ -1,0 +1,43 @@
+Model View Controller Architectural Design Pattern
+
+Business Logic (Model)
+	Experiment:
+		Phase: (inheritance: learning, testing, show answer)
+			Block(self, percentCorrectCriteria = 0) // default value is 0, assumes no enforcement of % correct, else specify a number from 0 - 100%
+
+ExperimentGUI (View)
+	welcomeWindow() # show welcome screen
+	exitWindow() # show exit screen
+
+User Input (Controller) # updates both model and view
+	buttonCategory() - user says this picture is this category (correct him if necessary)
+
+--------
+3 phases: learning, testing, show answer
+learning - tell user if correct/incorrect, keep track of percentage correct in a block(s)
+testing - just test user, display nothing but questions
+show answer - no user input, show correct answer and move on
+
+Configuration file determines all conditions/constraints of experiment
+list globalPictureList - store all pictures to be used in experiment
+list phasePictureList - store all pictures within globalPictureList to be used in phase x
+int percentCorrectCriteria - % correct for user to move to next block
+
+Hooray, no need to pass in list length as a data member!
+For the OOP: list.__len__() returns list length
+For the fuck-OOP: len(list) returns list length
+
+Note list.remove(x) exists, use it well!
+
+list categoriesList - stores a list of all categories (also a list)
+
+Think of it this way: (remember you are just storing the string name of an image!)
+categoryA = ['img001', 'img002']
+categoryB = ['img003', 'img004']
+categoryC = ['img005']
+
+categoriesList = [categoryA, categoryB, categoryC]
+
+Most important method for this data structure: check to see if image is in which category (pseudocode would be helpful)
+
+Douglas Note: Hmm, dictionary may be better data structure because of key value relationship (picture category)
