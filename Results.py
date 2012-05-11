@@ -27,7 +27,6 @@ class Results:
 		print "DEBUG: Entering Results.writeToFile(lineToWrite)"
 
 		self.__oOutputFile.write(p_sLineToWrite)
-		print "DEBUG: \tWrote to output file:" , p_sLineToWrite
 
 		print "DEBUG: Exiting Results.writeToFile(lineToWrite)"
 

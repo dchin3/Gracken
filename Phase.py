@@ -24,9 +24,10 @@ class Phase:
 	"""
 	Execute all blocks for this phase
 	@param self
+	@param p_oCategoryList list of categories for all images
 	@param p_oResults an instance of a Results object for output
 	"""
-	def runBlocks(self, p_oResults):
-		print "DEBUG: Entering Phase.runBlocks(oResults)"
+	def runBlocks(self, p_oCategoryList, p_oResults):
+		print "DEBUG: Entering Phase.runBlocks(oCategoryList, oResults)"
 
-		print "DEBUG: Exiting Phase.runBlocks(oResults)"
+		print "DEBUG: Exiting Phase.runBlocks(oCategoryList, oResults)"

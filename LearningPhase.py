@@ -28,18 +28,19 @@ class LearningPhase(Phase):
 	"""
 	Execute all learning blocks for this learning phase
 	@param self
+	@param p_oCategoryList list of categories for all images
 	@param p_oResults an instance of a Results object for output
 	"""
-	def runBlocks(self, p_oResults):
-		print "DEBUG: Entering LearningPhase.runBlocks(results)"
+	def runBlocks(self, p_oCategoryList, p_oResults):
+		print "DEBUG: Entering LearningPhase.runBlocks(oCategoryList, oResults)"
 
 		for ii in range(self.__oPhaseBlocks.__len__()):
 			print "DEBUG: \tEntering learning block" , ii + 1 , "out of" , self.__oPhaseBlocks.__len__() , ":" , self.__oPhaseImages.__len__() , "trials"
 			p_oResults.writeToFile("\tEntering learning block " + str(ii + 1) + " out of " + str(self.__oPhaseBlocks.__len__()) + " : " + str(self.__oPhaseImages.__len__()) + " trials\n")
 
-			self.__oPhaseBlocks[ii].runTrials(p_oResults)
+			self.__oPhaseBlocks[ii].runTrials(p_oCategoryList, p_oResults)
 
 			print "DEBUG: \tExiting learning block" , ii + 1 , "out of" , self.__oPhaseBlocks.__len__()
 			p_oResults.writeToFile("\tExiting learning block " + str(ii + 1) + " out of " + str(self.__oPhaseBlocks.__len__()) + "\n\n")
 
-		print "DEBUG: Exiting LearningPhase.runBlocks(results)"
+		print "DEBUG: Exiting LearningPhase.runBlocks(oCategoryList, oResults)"
