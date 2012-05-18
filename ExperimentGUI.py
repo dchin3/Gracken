@@ -9,7 +9,7 @@ import time
 
 """
 Contains GUI logic using PyGTK as part of the Model-View-Controller
-@author Douglas B. Chin, Lin Yuan Wang
+@author Lin Yuan Wang
 """
 class ExperimentGUI:
 	"""
@@ -22,7 +22,7 @@ class ExperimentGUI:
 		default value 550
 	@param p_sTitle title of GUI window
 		default value "Gracken v3.0"
-	"""	
+	"""
 	def __init__(self, p_iHeight = 500, p_iWidth = 550, p_sTitle = "Gracken v3.0"):
 		print "DEBUG: Entering ExperimentGUI(height, width, title) constructor"
 
@@ -99,7 +99,7 @@ class ExperimentGUI:
 		oCbutton = gtk.Button("Choice C")
 		#create image button
 		buttonImage = gtk.Image()
-		buttonImage.set_from_file("images\\big.jpg")
+		buttonImage.set_from_file("images\\fixation_cross.jpg")
 		buttonImage.show()
 		button = gtk.Button()
 		button.add(buttonImage)
@@ -112,16 +112,22 @@ class ExperimentGUI:
 		
 		redDot.show()
 		self.redDotBox.show()
-                
+
+	"""
+	Fetches an image filename from business logic
+	"""
+	def fetchImage(self, p_sNameOfImage):
+		self.showQuestion(self, p_sNameOfImage)
+
 	def showQuestion(self, widget, p_iNameOfImage):
 		print "DEBUG: Entering ExperimentGUI.showQuestion(self, widget, iNameOfImage)"
 		# First display the red dot and then the image
 		self.showRedDot()
-                self.window.remove(self.oBox1)
+		self.window.remove(self.oBox1)
 		self.window.add(self.redDotBox)
 		self.window.show_all()
 		while gtk.events_pending():
-                        gtk.main_iteration(False)
+			gtk.main_iteration(False)
 		time.sleep(0.75)
 		self.window.remove(self.redDotBox)
 		self.window.add(self.oBox1)
@@ -144,13 +150,14 @@ class ExperimentGUI:
 		oAbutton = gtk.Button("Choice A")
 		oBbutton = gtk.Button("Choice B")
 		oCbutton = gtk.Button("Choice C")
+		
 		#create image button
-                buttonImage = gtk.Image()
-                buttonImage.set_from_file("images\\big.jpg")
-                buttonImage.show()
+		buttonImage = gtk.Image()
+		buttonImage.set_from_file("images\\big.jpg")
+		buttonImage.show()
 		button = gtk.Button()
 		button.add(buttonImage)
-
+		
 		#action to take when button a is clicked        
 		oAbutton.connect_object("clicked", gtk.Widget.destroy, oQuestionImg)
 		oAbutton.connect("clicked", self.showQuestion, p_iNameOfImage + 1) # increment image #

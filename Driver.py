@@ -28,6 +28,8 @@ def main():
     res.writeToFile(expGUI.window.get_title() + " Experiment\n")
     res.writeToFile("Experiment started at: " + str(datetime.now()) + "\n\n")
 
+    gtk.main()
+
    # http://www.pygtk.org/dist/pygtk2-tut.pdf
     
     catA = ImageCategory("A", ["A0.jpg", "A1.jpg", "A2.jpg", "A3.jpg", "A4.jpg", "A5.jpg"])
@@ -51,7 +53,7 @@ def main():
     
     print "DEBUG: Entering gtk.main()"
     
-    gtk.main()
+    #gtk.main()
     
     print "DEBUG: Exiting gtk.main()"
 

@@ -8,18 +8,14 @@ class Phase:
 	@param self
 	@param p_oPhaseBlocks list of blocks to use in this phase
 		default value []
-	@param p_oPhaseImages list of images to use in this phase
-		default value []
 	"""
-	def __init__(self, p_oPhaseBlocks = [], p_oPhaseImages = []):
-		print "DEBUG: Entering Phase(oPhaseBlocks, oPhaseImages) constructor"
+	def __init__(self, p_oPhaseBlocks = []):
+		print "DEBUG: Entering Phase(oPhaseBlocks) constructor"
 
 		self.__oPhaseBlocks = p_oPhaseBlocks
-		self.__oPhaseImages = p_oPhaseImages
 		print "DEBUG: \toPhaseBlocks =" , self.__oPhaseBlocks
-		print "DEBUG: \toPhaseImages =" , self.__oPhaseImages
 
-		print "DEBUG: Exiting Phase(oPhaseBlocks, oPhaseImages) constructor"
+		print "DEBUG: Exiting Phase(oPhaseBlocks) constructor"
 
 	"""
 	Execute all blocks for this phase
